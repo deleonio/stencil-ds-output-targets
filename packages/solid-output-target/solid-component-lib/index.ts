@@ -7,6 +7,25 @@ export interface HTMLStencilElement extends HTMLElement {
 // https://stackoverflow.com/questions/63116039/camelcase-to-kebab-case
 const camelToKebabCase = (str: string) => str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 
+const handleList = (prop: unknown): string | null => {
+  let list: unknown;
+  if (typeof prop === 'object' && prop !== null) {
+    list = '';
+    for (const key in prop) {
+      if ((prop as Record<string, unknown>)[key] === true) {
+        list += `${key};`;
+      }
+    }
+  } else {
+    list = prop;
+  }
+  if (typeof list === 'string' && list.length > 0) {
+    return list;
+  } else {
+    return null;
+  }
+};
+
 export function createSolidComponent<PropType, ElementType extends HTMLStencilElement>(
   tag: string,
 ) {
@@ -22,6 +41,27 @@ export function createSolidComponent<PropType, ElementType extends HTMLStencilEl
             node.innerHTML = child;
           }
         });
+      } else if (key === 'debug') {
+        console.log(tag, props, node);
+      } else if (key === 'ref') {
+        // https://www.solidjs.com/docs/latest/api#ref
+        if (typeof props[key] === 'function' && (props[key] as Function).length > 0) {
+          (props[key] as Function)(node);
+        } else {
+          (props[key] as HTMLElement) = node;
+        }
+      } else if (key === 'class' || key === 'classList') {
+        // https://www.solidjs.com/docs/latest/api#classlist
+        const list = handleList(props['classList']);
+        if (list !== null) {
+          node.setAttribute('class', list);
+        }
+      } else if (key === 'style') {
+        // https://www.solidjs.com/docs/latest/api#style
+        const list = handleList(props['style']);
+        if (list !== null) {
+          node.setAttribute('style', list);
+        }
       } else if (Object.prototype.hasOwnProperty.call(props, key)) {
         const kebabKey: string = camelToKebabCase(key);
         if (
