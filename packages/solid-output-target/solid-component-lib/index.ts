@@ -51,7 +51,7 @@ export function createSolidComponent<PropType, ElementType extends HTMLStencilEl
         } else {
           (props[key] as HTMLElement) = node;
         }
-      } else if (key === 'class' || key === 'classList') {
+      } else if (key === 'classList') {
         // https://www.solidjs.com/docs/latest/api#classlist
         const list = handleList(props['classList'], (key, value) =>
           value === true ? `${key} ` : '',
