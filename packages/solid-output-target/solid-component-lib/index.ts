@@ -7,12 +7,12 @@ export interface HTMLStencilElement extends HTMLElement {
 // https://stackoverflow.com/questions/63116039/camelcase-to-kebab-case
 const camelToKebabCase = (str: string) => str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 
-const handleList = (prop: unknown): string | null => {
+const handleList = (prop: unknown, validator: (val: unknown) => boolean): string | null => {
   let list: unknown;
   if (typeof prop === 'object' && prop !== null) {
     list = '';
     for (const key in prop) {
-      if ((prop as Record<string, unknown>)[key] === true) {
+      if (validator(prop as Record<string, unknown>)[key]) {
         list += `${key};`;
       }
     }
@@ -52,13 +52,19 @@ export function createSolidComponent<PropType, ElementType extends HTMLStencilEl
         }
       } else if (key === 'class' || key === 'classList') {
         // https://www.solidjs.com/docs/latest/api#classlist
-        const list = handleList(props['classList']);
+        const list = handleList(
+          props['classList'],
+          (value) => (value as Record<string, unknown>)[key] === true,
+        );
         if (list !== null) {
           node.setAttribute('class', list);
         }
       } else if (key === 'style') {
         // https://www.solidjs.com/docs/latest/api#style
-        const list = handleList(props['style']);
+        const list = handleList(
+          props['style'],
+          (value) => typeof (value as Record<string, unknown>)[key] === 'string',
+        );
         if (list !== null) {
           node.setAttribute('style', list);
         }
