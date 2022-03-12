@@ -12,7 +12,7 @@ const handleList = (prop: unknown, validator: (val: unknown) => boolean): string
   if (typeof prop === 'object' && prop !== null) {
     list = '';
     for (const key in prop) {
-      if (validator(prop as Record<string, unknown>)[key]) {
+      if (validator((prop as Record<string, unknown>)[key])) {
         list += `${key};`;
       }
     }
