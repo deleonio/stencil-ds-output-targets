@@ -66,15 +66,15 @@ export function createSolidComponent<PropType, ElementType extends HTMLStencilEl
           node.setAttribute('style', list);
         }
       } else if (Object.prototype.hasOwnProperty.call(props, key)) {
-        const kebabKey: string = camelToKebabCase(key);
         if (
           typeof (props as Record<string, unknown>)[key] === 'string' ||
           typeof (props as Record<string, unknown>)[key] === 'number' ||
           typeof (props as Record<string, unknown>)[key] === 'boolean'
         ) {
+          const kebabKey: string = camelToKebabCase(key);
           node.setAttribute(kebabKey, (props as Record<string, any>)[key]);
         } else {
-          (node as Record<string, any>)[kebabKey] = (props as Record<string, any>)[key];
+          (node as Record<string, any>)[key] = (props as Record<string, any>)[key];
         }
       }
     }
