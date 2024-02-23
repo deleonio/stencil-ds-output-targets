@@ -1,4 +1,5 @@
 import { JSX, PropsWithChildren } from 'solid-js';
+import { CONFIG } from './config';
 
 export interface HTMLStencilElement extends HTMLElement {
   componentOnReady(): Promise<this>;
@@ -8,7 +9,7 @@ export function createSolidComponent<PropType, ElementType extends HTMLStencilEl
   tag: string,
 ) {
   return (props: PropsWithChildren<PropType & JSX.HTMLAttributes<ElementType>>): ElementType => {
-    const node = document.createElement(tag);
+    const node = document.createElement(CONFIG.transformTagName(tag));
     for (const key in props) {
       if (key === 'children') {
         const children = Array.isArray(props[key]) ? props[key] : [props[key]];
